@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./Users");
 
 const NotesSchema = new mongoose.Schema({
     title: {
@@ -19,4 +20,5 @@ const NotesSchema = new mongoose.Schema({
     }
 })
 
+User.createIndexes()
 module.exports = mongoose.model("Notes",NotesSchema)
