@@ -4,9 +4,11 @@ const User = require("../models/Users")
 const { body, validationResult } = require("express-validator");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-// Create a user using POST "/api/auth"
+const fetchUser = require("../middleware/fetchUser")
 
-const JWT_SECRET = "Fd5$gkloPjAsRtsxZa"
+const JWT_SECRET = "Fd5$gkloPjAsRtsxZa";
+// Route 1: Create a user using POST "/api/auth"
+
 router.post("/createuser", [
     // Applying validation based on the fields in our schema
     body("name", "Please enter a valid name").isLength({ min: 3 }),
@@ -45,7 +47,7 @@ router.post("/createuser", [
     }
 })
 
-// Authenticate a user using POST "/api/auth/login"
+//  Route 2: Authenticate a user using POST "/api/auth/login"
 
 router.post("/login", [
     // Applying validation based on the fields in our schema
@@ -57,7 +59,7 @@ router.post("/login", [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     }
-    // Taking the values of email and password fields out of req.body by using array destructuring
+    // Taking the values of email and password fields out of req.body by using object destructuring
     const {email,password} = req.body
 
     try
@@ -78,13 +80,29 @@ router.post("/login", [
                 id: user.id
             }
         }
-        const auth_token = jwt.sign(data, JWT_SECRET)
+        const auth_token = jwt.sign(data, JWT_SECRET,{expiresIn: "2d"})
         res.json({ auth_token })
     }
     catch(err)
     {
         console.error(err.message);
         res.status(500).send("Internal Server error");
+    }
+})
+
+// Route 3: Get logged in user details. Login Required
+
+router.post("/getUser",fetchUser,async (req,res)=>{
+    try
+    {
+        let userId = req.user.id;
+        const user = await User.findById(userId).select("-password");
+        res.send(user)
+    }
+    catch(err)
+    {
+        console.log(err.message);
+        return res.status(500).json({error:"Internal Server Error"})
     }
 })
 module.exports = router
