@@ -5,9 +5,10 @@ const { body, validationResult } = require("express-validator");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const fetchUser = require("../middleware/fetchUser")
+require("dotenv").config()
 
-const JWT_SECRET = "Fd5$gkloPjAsRtsxZa";
-// Route 1: Create a user using POST "/api/auth"
+const JWT_SECRET = process.env.JWT_SECRET
+// Route 1: Create a user using POST "/api/auth" No login required
 
 router.post("/createuser", [
     // Applying validation based on the fields in our schema
@@ -15,6 +16,7 @@ router.post("/createuser", [
     body("email", "Please enter a valid email").isEmail(),
     body("password", "Please enter a valid password").isLength({ min: 5 })
 ], async (req, res) => {
+    // If there are errors then return bad request and the errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
@@ -25,6 +27,7 @@ router.post("/createuser", [
         if (user) {
             return res.status(400).json({ error: "Sorry a user with this email already exists" })
         }
+        // Hashing the password of the user with the salt included
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
         user = await User.create({
@@ -47,7 +50,7 @@ router.post("/createuser", [
     }
 })
 
-//  Route 2: Authenticate a user using POST "/api/auth/login"
+//  Route 2: Authenticate a user using POST "/api/auth/login" No login required
 
 router.post("/login", [
     // Applying validation based on the fields in our schema
