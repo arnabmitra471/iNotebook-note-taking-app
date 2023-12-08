@@ -46,4 +46,31 @@ router.post("/addnote", fetchUser, [
             res.status(500).send("Internal Server error");
         }
     })
+
+router.put("/updatenote/:id",fetchUser,async (req,res)=>{
+
+    let {title,description,tag} = req.body
+    //Create a newNote object
+    let newNote = {};
+    if(title)
+    {
+        newNote.title = title;
+    }
+    if(description)
+    {
+        newNote.description = description;
+    }
+    if(tag)
+    {
+        newNote.tag = tag;
+    }
+    // find the note by to be updated and update it
+    let note = await Note.findById(req.params.id);
+    if(!note)
+    {
+        return res.status(404).send("Not Found");
+    }
+    note = await Note.findByIdAndUpdate(req.params.id,{$set: newNote},{new:true});
+    res.json({note});
+})
 module.exports = router
