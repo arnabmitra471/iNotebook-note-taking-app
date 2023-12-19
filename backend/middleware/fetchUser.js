@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config()
 
 
 const fetchUser = (req, res, next) => {
     // Get the user from the jwt token and add id to the req object
     const token = req.header("auth-token");
-    const JWT_SECRET = process.env.JWT_SECRET;
+    const JWT_SECRET = "Fd5$gkloPjAsRtsxZa"
     if (!token) {
         res.status(401).json({ error: "Please authenticate using a valid token" })
     }
