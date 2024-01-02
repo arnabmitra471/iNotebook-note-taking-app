@@ -68,8 +68,8 @@ const handleClick = (e)=>{
       </div>
       <div className='row my-3'>
         <h2>Your Notes</h2>
-        {notes.map((note) => {
-          return <NoteItem updatenote = { updateNote }note={note} key={note._id} />
+        {notes.map((note,i) => {
+          return <NoteItem updatenote = { updateNote }note={note} key={i} />
         })}
       </div>
     </>
