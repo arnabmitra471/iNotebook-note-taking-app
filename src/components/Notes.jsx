@@ -5,15 +5,16 @@ import AddNote from './AddNote'
 import NoteContext from '../context/notes/NoteContext'
 const Notes = () => {
   const noteContext = useContext(NoteContext)
-  const { notes, getNotes } = noteContext;
-  const ref = useRef("");
-  const [note,setNote] = useState({etitle: "",edescription: "",etag:"default"})
+  const { notes, getNotes,editNote } = noteContext;
+  const ref = useRef(null);
+  const refClose = useRef(null);
+  const [note,setNote] = useState({id: "", etitle: "",edescription: "",etag:"default"})
   useEffect(() => {
     getNotes()
   }, [])
   const updateNote = (curr_note)=>{
     ref.current.click()
-    setNote({etitle: curr_note.title,edescription: curr_note.description,etag: curr_note.tag})
+    setNote({id: curr_note._id,etitle: curr_note.title,edescription: curr_note.description,etag: curr_note.tag})
   }
   const handleOnChange = (e)=>{
     setNote({...note,[e.target.name]:e.target.value})
@@ -21,6 +22,8 @@ const Notes = () => {
 const handleClick = (e)=>{
     e.preventDefault()
     console.log("updating the note",note);
+    editNote(note.id,note.etitle,note.edescription,note.etag)
+    refClose.current.click()
 }
   return (
     <>
@@ -57,7 +60,7 @@ const handleClick = (e)=>{
                 </form>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button ref={refClose} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <button type="button" className="btn btn-primary" onClick={handleClick}>Update Note</button>
             </div>
           </div>
@@ -65,8 +68,8 @@ const handleClick = (e)=>{
       </div>
       <div className='row my-3'>
         <h2>Your Notes</h2>
-        {notes.map((note) => {
-          return <NoteItem updatenote = { updateNote }note={note} key={note._id} />
+        {notes.map((note,i) => {
+          return <NoteItem updatenote = { updateNote }note={note} key={i} />
         })}
       </div>
     </>

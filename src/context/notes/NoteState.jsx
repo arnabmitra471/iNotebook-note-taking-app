@@ -31,6 +31,8 @@ const NoteState = (props)=>{
           },
           body: JSON.stringify({title,description,tag})
         })
+        let json = await response.json();
+        console.log(json)
         let note = {
           "_id": "65728c7532a9b60211a27f7c",
           "user": "657000c36666a09f04bfcb00",
@@ -53,18 +55,23 @@ const NoteState = (props)=>{
           },
           body: JSON.stringify({title,description,tag})
         })
+        const json = await response.json()
+        console.log(json)
         let i;
+        let newNotes = JSON.parse(JSON.stringify(notes))
         for(i=0;i<notes.length;i++)
         {
           const element = notes[i];
 
           if(element._id===id)
           {
-            element.title = title;
-            element.description = description;
-            element.tag = tag;
+            newNotes[i].title = title;
+            newNotes[i].description = description;
+            newNotes[i].tag = tag;
+            break;
           }
         }
+        setNotes(newNotes);
       }
 
       // 3. Delete a note
